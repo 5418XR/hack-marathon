@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <!-- 为了确保适当的绘制和触屏缩放，需要在 <head> 之中添加 viewport 元数据标签。 -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<style type="text/css">
+		body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+		</style>
+        <title>受灾地区人员信息收集</title>
+        <!-- 新 Bootstrap 核心 CSS 文件 -->
+        <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<script type="text/javascript" 
+		//ak填自己申请的ak
+		src="http://api.map.baidu.com/api?v=2.0& ak=3.0&ak=ny6s7VvV9KlDV72LSl0YyeUFFxdTF8kt">
+		</script>
+        <script type="text/javascript">
+            var index = 1;
+            var p = new Array();//var p = [];
+            /**显示人员信息**/
+            function showPerson(){
+                //显示表格
+                var table1 = document.getElementById("table1");
+                table1.style = "margin: 1.25rem;";
+                var str = "<tr> <th>编号</th><th>姓名</th><th>性别</th><th>年龄</th><th>联系方式</th><th>受灾位置</th><th>详细紧急情况</th><th>灾害类别</th><th>操作</th> </tr>";
+                for(var i=0;i<p.length;i++){
+                    var a = p[i];
+                    str += "<tr> <td>"+a.id+"</td><td>"+a.name+"</td><td>"+a.sex+"</td><td>"+a.old+"</td><td>"+a.contact+"</td><td>"+a.area+"</td><td>"+a.condition+"</td><td>"+a.type+"</td><td><button type='button' class='btn btn-success' onclick='showUpdatePerson("+a.id+")'>更新</button> &nbsp;&nbsp;   <button type='button' class='btn btn-danger' onclick='deletePerson("+a.id+")'>删除</button>  </td> </tr>";
+                }
+                table1.innerHTML = str;
+            }
+            /**显示新增人员信息**/
+            function showAddPerson(){
+                //隐藏更新人员界面
+                var div3 = document.getElementById("div3");
+                div3.style = "display: none;";
+                var div2 = document.getElementById("div2");
+                div2.style = "margin: 2.25rem;";    
+            }
+            /**新增人员信息**/
+            function addPerson(){
+                var field2 = document.getElementById("field2");
+                var a = {};//var a = new Array();
+                // var a = p[index-1];
+                a.id = index;
+                a.name = document.getElementById("name").value;
+                a.old = document.getElementById("old").value;
+                a.sex = document.getElementById("sex").value;
+                a.area = document.getElementById("area").value;
+                a.condition = document.getElementById("condition").value;
+                a.type = document.getElementById("type").value;
+                a.contact = document.getElementById("contact").value;
+                // alert(a.id+" "+a.name+" "+a.old+" "+a.sex+" "+a.area +" "+a.condition+" "+a.type );
+                index++;
+                //数组添加表单的值
+                p.push(a);
+                //添加之后重新查询表单
+                showPerson();
+                //隐藏新增人员信息界面
+                var div2 = document.getElementById("div2");
+                div2.style = "display: none;";
+            }
+            /**取消按钮，隐藏表单**/
+            function cancel(){
+                //隐藏新增人员信息界面
+                var div2 = document.getElementById("div2");
+                div2.style = "display: none;";
+                //隐藏更新人员信息界面
+                var div3 = document.getElementById("div3");
+                div3.style = "display: none;";
+            }
+            /**根据id删除人员信息**/
+            function deletePerson(id){
+                var flag = confirm("确定删除？");
+                if(flag){
+                    for(var i=0;i<p.length;i++){
+                        var a = p[i];
+                        if(a.id == id){
+                            p.splice(i,1);//从第i个位置开始删除一个元素
+                        }
+                    }
+                }
+                //删除完毕重新加载表单
+                showPerson();
+            }
+            /**根据id修改人员信息**/
+            function showUpdatePerson(id){
+                //隐藏添加人员界面
+                var div2 = document.getElementById("div2");
+                div2.style = "display: none;";
+                //显示更新人员界面
+                var div3 = document.getElementById("div3");
+                div3.style = "margin: 2.25rem";
+                //根据id遍历数组得到要修改的值,然后用document对象进行修改
+                for(var i=0;i<p.length;i++){
+                    var a = p[i];
+                    if(a.id == id){
+                        document.getElementById("uname").value = a.name;
+                        document.getElementById("uold").value = a.old;
+                        document.getElementById("usex").value = a.sex;
+                        document.getElementById("uarea").value = a.area;
+                        document.getElementById("uid").value = a.id;
+                        document.getElementById("ucondition").value = a.condition;
+                        document.getElementById("utype").value = a.type;
+                        document.getElementById("ucontact").value = a.contact;
+                    }
+                }
+            }
+            function updatePerson(){
+                var id = document.getElementById("uid").value;
+                //再根据id把表单中的value值存入对于的p[]i数组中
+                for(var i=0;i<p.length;i++){
+                    var a = p[i];
+                    if(a.id == id){
+                        p[i].name = document.getElementById("uname").value;
+                        p[i].old = document.getElementById("uold").value;
+                        p[i].sex = document.getElementById("usex").value;
+                        p[i].area = document.getElementById("uarea").value;
+                        p[i].condition = document.getElementById("ucondition").value;
+                        p[i].type = document.getElementById("utype").value;
+                        p[i].contact = document.getElementById("ucontact").value;
+                    }
+                }
+                //重新调用表单刷新
+                showPerson();
+                //隐藏更新人员界面
+                //隐藏新增人员信息界面
+                var div2 = document.getElementById("div2");
+                div2.style = "display: none;";
+                var div3 = document.getElementById("div3");
+                div3.style = "display: none;";
+            }
+        </script>
+    </head>
+    <body>
+        <div id="" style="margin: 1.25rem;">
+            <button type="button" class="btn btn-info" onclick="showPerson()"><span class="glyphicon glyphicon-qrcode"></span> 显示人员信息</button>
+            <button type="button" class="btn btn-info" onclick="showAddPerson()"><span class="glyphicon glyphicon-sound-stereo"></span> 新增人员信息</button>
+        </div>
+        
+        <!-- 表格信息 -->
+        <div id="div1" style="margin: 1.25rem;">
+            <table border="1" class="table table-hover" style="display: none;" id="table1" cellspacing="2" cellpadding="2">
+            <!-- <tr> <th>编号</th><th>姓名</th><th>性别</th><th>年龄</th><th>籍贯</th><th colspan="2">操作</th> </tr>
+                <tr> <td>v.编号</td><td>v.姓名</td><td>v.性别</td><td>v.年龄</td><td>v.籍贯</td><td><button type="button" onclick="">删除</button></td><td><button type="button">更新</button></td> </tr>
+             --></table>
+        </div>
+        <!-- 新增人员信息 -->
+        <div id="div2" style="display: none;margin: 1.25rem;">
+            <fieldset id="field2">
+                <legend>新增人员信息</legend>
+                <table class="table table-hover">
+                    <input type="hidden"  class="form-control" name="id" id="uid"/>
+                    <tr>
+                        <td>姓名:</td>
+                        <td><input type="text" class="form-control" name="name" id="name" maxlength="4" autocomplete="off"/></td>
+                    </tr> 
+                    <tr>
+                        <td>年龄：</td>
+                        <td><input type="text" class="form-control"  name="old" id="old" maxlength="2" autocomplete="off"/></td>
+                    </tr>
+                    <tr>
+                        <td>性别：</td>
+                        <td>
+                            <select id="sex" class="form-control"  required="required">
+                                <option value ="">--请选择--</option>
+                                <option value ="男" >男</option>
+                                <option value ="女">女</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>联系方式:</td>
+                        <td><input type="text" class="form-control" name="contact" id="contact" maxlength="11" autocomplete="off"/></td>
+                    </tr>
+                    <tr>
+                        <td>受灾位置：</td>
+                        <td><input type="text" class="form-control"  name="area" id="area" autocomplete="off" /></td>
+                    </tr>
+                    <tr>
+                        <td>详细紧急情况:</td>
+                        <td><input type="text" class="form-control" name="condition" id="condition" autocomplete="off" /></td>
+                    </tr>
+                    <tr>
+                        <td>灾害类别:</td>
+                        <td>
+                        <select id="type" class="form-control"  required="required">
+                                <option value ="">--请选择--</option>
+                                <option value ="地震" >地震</option>
+                                <option value ="洪水">洪水</option>
+                                <option value ="火灾">火灾</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><button type="button" class="btn btn-primary" onclick="addPerson()">确定</button><button type="button" class="btn btn-warning" onclick="cancel()">取消</button></td>
+                    </tr>
+                </table>
+            </fieldset>
+        </div>
+        <!-- 更新人员信息 -->
+        <div id="div3" style="display: none;margin: 1.25rem;" name="div3">
+            <fieldset id="field3">
+                <legend>更新人员信息</legend>
+                <table class="table table-hover">
+                    <tr>
+                        <td>姓名：</td>
+                        <td><input type="text" class="form-control"  name="name" id="uname" maxlength="4"autocomplete="off"/></td>
+                    </tr>
+                    <tr>
+                        <td>年龄：</td>
+                        <td><input type="text"  class="form-control" name="old" id="uold" maxlength="2"autocomplete="off"/></td>
+                    </tr>
+                    <tr>
+                        <td>性别：</td>
+                        <td>
+                            <select id="usex" class="form-control"  required="required">
+                                <option value ="">--请选择--</option>
+                                <option value ="男" >男</option>
+                                <option value ="女">女</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>联系方式:</td>
+                        <td><input type="text" class="form-control" name="contact" id="ucontact" maxlength="11" autocomplete="off"/></td>
+                    </tr>
+                    <tr>
+                        <td>受灾位置：</td>
+                        <td><input type="text" class="form-control"  name="area" id="uarea" autocomplete="off"/></td>
+                    </tr>
+                    <tr>
+                        <td>详细紧急情况:</td>
+                        <td><input type="text" class="form-control" name="condition" id="ucondition"  autocomplete="off"/></td>
+                    </tr>
+                    <tr>
+                        <td>灾害类别:</td>
+                        <td>
+                        <select id="utype" class="form-control"  required="required">
+                                <option value ="">--请选择--</option>
+                                <option value ="地震" >地震</option>
+                                <option value ="洪水">洪水</option>
+                                <option value ="火灾">火灾</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><button type="button" class="btn btn-success" onclick="updatePerson()">确定</button><button type="button" class="btn btn-warning" onclick="cancel()">取消</button></td>
+                    </tr>
+                </table>
+            </fieldset>
+        </div>
+        <div id="allmap"></div>
+    </body>
+</html>
+<script type="text/javascript">
+//新建三个地图上点
+var points = [  
+{"lng":113.62,"lat":34.75,"url":"http://www.baidu.com","id":1,"name":"Bob"},  
+{"lng":113.61,"lat":34.72,"url":"http://www.mi.com","id":2,"name":"Henry"},  
+{"lng":113.60,"lat":34.67,"url":"http://www.csdn.com","id":3,"name":"Jim"}  
+]; 
+//创建标注点并添加到地图中
+function addMarker(points) {
+    //循环建立标注点
+    for(var i=0, pointsLen = points.length; i<pointsLen; i++) {
+        var point = new BMap.Point(points[i].lng, points[i].lat); //将标注点转化成地图上的点
+        var marker = new BMap.Marker(point); //将点转化成标注点
+        map.addOverlay(marker);  //将标注点添加到地图上
+        //添加监听事件
+        (function() {
+            var thePoint = points[i];
+            marker.addEventListener("click",
+                function() {
+                showInfo(this,thePoint);
+            });
+         })();  
+    }
+}
+function showInfo(thisMarker,point) {
+    //获取点的信息
+    var sContent = 
+    '<ul style="margin:0 0 5px 0;padding:0.2em 0">'  
+    +'<li style="line-height: 26px;font-size: 15px;">'  
+    +'<span style="width: 50px;display: inline-block;">id：</span>' + point.id + '</li>'  
+    +'<li style="line-height: 26px;font-size: 15px;">'  
+    +'<span style="width: 50px;display: inline-block;">名称：</span>' + point.name + '</li>'  
+    +'<li style="line-height: 26px;font-size: 15px;"><span style="width: 50px;display: inline-block;">查看：</span><a href="'+point.url+'">详情</a></li>'  
+    +'</ul>';
+    var infoWindow = new BMap.InfoWindow(sContent); //创建信息窗口对象
+    thisMarker.openInfoWindow(infoWindow); //图片加载完后重绘infoWindow
+}
+//创建地图
+var map = new BMap.Map("allmap");    
+map.centerAndZoom(new BMap.Point(115.404, 30.915), 11);  // 设置中心点
+map.centerAndZoom( "郑州");
+map.setCurrentCity("郑州");          //设置为郑州
+map.addControl(new BMap.MapTypeControl());   
+map.enableScrollWheelZoom(true);     
+addMarker(points);
+</script>
